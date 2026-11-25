@@ -24,13 +24,28 @@ async function init() {
 
 init();
 async function getUser(){
+  try {
+    const resp = await axios.get(URI);
+    const titulares = resp.data.data;
 
-  const resp = await axios.get(URI);
-  const xmlData = resp.data.data;
-  if (xmlData) {
-    // America
-    const dataItem1  = xmlData[0].title;
-    
-    document.getElementById('title1').innerHTML = dataItem1;
+    if (Array.isArray(titulares) && titulares.length > 0) {
+      const previousTitle = localStorage.getItem('lastHeadline');
+      const availableTitulares = titulares.filter((item) =>
+        item.title && item.title !== previousTitle
+      );
+      const titularesParaRotar = availableTitulares.length > 0
+        ? availableTitulares
+        : titulares.filter((item) => item.title);
+
+      if (titularesParaRotar.length > 0) {
+        const randomIndex = Math.floor(Math.random() * titularesParaRotar.length);
+        const dataItem1 = titularesParaRotar[randomIndex].title;
+
+        document.getElementById('title1').textContent = dataItem1;
+        localStorage.setItem('lastHeadline', dataItem1);
+      }
+    }
+  } catch (error) {
+    console.error('No se pudo cargar el titular:', error);
   }
 }
