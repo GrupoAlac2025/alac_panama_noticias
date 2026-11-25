@@ -5,10 +5,38 @@ var content3 = document.getElementById('contenido3');
 var bgVideo = document.getElementById('bg-video');
 var titularesCargados = [];
 
+function getLastHeadline() {
+  try {
+    return localStorage.getItem('lastHeadline');
+  } catch (e) {
+    return null;
+  }
+}
+
+function setLastHeadline(value) {
+  try {
+    localStorage.setItem('lastHeadline', value);
+  } catch (e) {
+    // Ignore storage errors in restricted environments
+  }
+}
+
+function showHeadlineLayer() {
+  content.style.display = "none";
+  content2.style.display = "block";
+  content3.style.display = "none";
+}
+
+function hideHeadlineLayer() {
+  content.style.display = "block";
+  content2.style.display = "none";
+  content3.style.display = "none";
+}
+
 function showRandomHeadline() {
   if (!Array.isArray(titularesCargados) || titularesCargados.length === 0) return;
 
-  const previousTitle = localStorage.getItem('lastHeadline');
+  const previousTitle = getLastHeadline();
   const availableTitulares = titularesCargados.filter((item) =>
     item.title && item.title !== previousTitle
   );
@@ -21,38 +49,46 @@ function showRandomHeadline() {
     const dataItem1 = titularesParaRotar[randomIndex].title;
 
     document.getElementById('title1').textContent = dataItem1;
-    localStorage.setItem('lastHeadline', dataItem1);
+    setLastHeadline(dataItem1);
   }
 }
 
 function syncWithVideo() {
   if (!bgVideo) {
-    content.style.display = "none";
-    content2.style.display = "block";
-    content3.style.display = "none";
+    showHeadlineLayer();
     return;
   }
 
   let showedInCurrentLoop = false;
+  let videoTimeUpdated = false;
+
+  bgVideo.muted = true;
+  bgVideo.play().catch(() => {
+    showHeadlineLayer();
+  });
 
   bgVideo.addEventListener('timeupdate', () => {
+    videoTimeUpdated = true;
     if (bgVideo.currentTime >= 3) {
       if (!showedInCurrentLoop) {
         showedInCurrentLoop = true;
       }
-      content.style.display = "none";
-      content2.style.display = "block";
-      content3.style.display = "none";
+      showHeadlineLayer();
     } else {
       if (showedInCurrentLoop) {
         showedInCurrentLoop = false;
         showRandomHeadline();
       }
-      content.style.display = "block";
-      content2.style.display = "none";
-      content3.style.display = "none";
+      hideHeadlineLayer();
     }
   });
+
+  // Fallback si el video no emite timeupdate o está pausado
+  setTimeout(() => {
+    if (!videoTimeUpdated || bgVideo.paused) {
+      showHeadlineLayer();
+    }
+  }, 3000);
 }
 
 async function init() {
@@ -64,8 +100,12 @@ init();
 
 async function getUser() {
   try {
-    const resp = await axios.get(URI);
-    const titulares = resp.data.data;
+    const response = await fetch(URI);
+    if (!response.ok) {
+      throw new Error('HTTP ' + response.status);
+    }
+    const json = await response.json();
+    const titulares = json.data;
 
     if (Array.isArray(titulares) && titulares.length > 0) {
       titularesCargados = titulares;

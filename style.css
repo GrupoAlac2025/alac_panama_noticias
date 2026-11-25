@@ -18,21 +18,30 @@ html, body {
 #bg-video {
     object-fit: fill;
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     min-width: 100%;
     min-height: 100%;
     width: 100%;
     height: 100vh;
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
     overflow: hidden;
+    transform: translateZ(0);
 }
 
 main {
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 10;
     width: 100%;
     height: 100vh;
+    transform: translateZ(0);
 }
 
 .content, .content2, .content3 {
@@ -43,75 +52,56 @@ main {
 }
 
 
+/* Área del recuadro gris de titulares:
+   left ~8.5%, top ~22%, width ~84%, height ~54%
+   (con padding superior para librar la etiqueta "Titulares" que llega hasta ~25%) */
 #millones {
-    font-size: 45pt;
+    position: absolute;
+    left: 8.5%;
+    top: 22%;
+    width: 84%;
+    height: 54%;
+    box-sizing: border-box;
+    padding: 4vh 4.5vw 3vh 4.5vw;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    font-size: clamp(20px, 4vw, 45pt);
+    line-height: 1.15;
     font-family: 'COCOGOOSE', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     color: #000;
-    left: 5%;
-    top: 28%;
-    right: 2%;
-    position: absolute;
     z-index: 20;
+    overflow: hidden;
+}
+
+#title1 {
+    display: block;
+    width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* 800x420 */
 @media only screen and (max-width: 800px) {
-    /* .pozo {
-        font-size: 62pt;
-        font-family: 'COCOGOOSE', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        color: #EB1C24;
-        position: absolute;
-        z-index: 10;
-        left: 20%;
-        right: 2%;
-        top: 55%;
-    } */
-
     #millones {
-        font-size: 28pt !important;
-        font-family: 'COCOGOOSE', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        color: #000;
-        left: 7%;
-        top: 24%;
-        right: 8%;
-        position: absolute;
+        font-size: clamp(18px, 3.8vw, 28pt);
+        line-height: 1.15;
     }
 }
 
 /* 768x384 and 640x768 */
 @media only screen and (max-width: 768px) {
     #millones {
-        font-size: 32pt !important;
-        font-family: 'COCOGOOSE', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        color: #000;
-        left: 5% !important;
-        right: 5% !important;
-        top: 25% !important;
-        position: absolute !important;
-        text-align: center !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        width: 90% !important;
-        line-height: 1.1;
+        font-size: clamp(16px, 3.6vw, 26pt);
+        line-height: 1.15;
     }
 }
 
 /* VERTICAL */
 @media screen and (max-width: 601px) and (orientation: portrait) {
-    .content, .content2, .content3 {
-        width: 100%;
-        height: 100vh;
-        position: relative;
-        overflow: hidden;
-    }
-
     #millones {
-        font-size: 32pt !important;
-        left: 10% !important;
-        top: 28% !important;
-        right: 10% !important;
-        text-align: left;
-        line-height: 1.1;
+        font-size: clamp(16px, 5vw, 28pt);
+        line-height: 1.15;
     }
 }
