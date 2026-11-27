@@ -91,7 +91,19 @@ function syncWithVideo() {
   }, 3000);
 }
 
+async function preloadFonts() {
+  if (document.fonts && document.fonts.load) {
+    try {
+      await document.fonts.load('1em COCOGOOSE');
+      await document.fonts.ready;
+    } catch (e) {
+      // Ignorar errores de carga de fuente
+    }
+  }
+}
+
 async function init() {
+  preloadFonts();
   syncWithVideo();
   await getUser();
 }
